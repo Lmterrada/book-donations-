@@ -5,37 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Approve Donation</title>
 <style>
-  body { font-family: Arial; background:#e6f0ff; text-align:center; padding:50px; color:#003366; }
-  .message { background:#cce0ff; display:inline-block; padding:20px; border-radius:8px; font-size:1.2em; }
+  body { 
+    font-family: Arial, sans-serif; 
+    background: #e6f0ff; 
+    text-align: center; 
+    padding: 50px; 
+    color: #003366; 
+  }
+  .message { 
+    background: #cce0ff; 
+    display: inline-block; 
+    padding: 20px; 
+    border-radius: 8px; 
+    font-size: 1.2em; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
 </style>
 </head>
 <body>
 <div class="message" id="message">Processing approval...</div>
 
+<!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 <script>
-const supabaseUrl = "https://vzovofazxfwboovwaynh.supabase.co";
-const supabaseKey = "sb_publishable_iqHfuWclev_w6l7T1Bnndw_T6N5__YB";
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // --- Supabase setup ---
+  const supabaseUrl = "https://vzovofazxfwboovwaynh.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6b3ZvZmF6eGZ3Ym9vdndheW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MjkyMjksImV4cCI6MjA4NDEwNTIyOX0.N2uHD5Ee9pA1rSbxuu-P8l_1PK3Zmqc-FLs2f4ddwbs"; // <-- your anon/public key
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-async function approveDonation() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const txid = urlParams.get('id');
-  const messageEl = document.getElementById('message');
-  if(!txid){ messageEl.innerText = "Invalid approval link."; return; }
+  // --- Approve donation ---
+  async function approveDonation() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const txid = urlParams.get('id');
+    const messageEl = document.getElementById('message');
 
-  const {data,error} = await supabase.from('donors_sponsor').update({status:'approved'}).eq('txid',txid).select();
-  if(error || !data.length){ messageEl.innerText = "Error approving donation."; console.error(error); return; }
+    if (!txid) {
+      messageEl.innerText = "Invalid approval link.";
+      return;
+    }
 
-  const donorName = data[0].name;
+    try {
+      const { data, error } = await supabase
+        .from('donors_sponsor')
+        .update({ status: 'approved' })
+        .eq('txid', txid)
+        .select();
 
-  messageEl.innerText = `Thank you, ${donorName}! Your payment has been confirmed.`;
+      if (error || !data.length) {
+        messageEl.innerText = "Error approving donation.";
+        console.error(error);
+        return;
+      }
 
-  // Optionally reload sponsor section if donor is on main site
-  if(window.opener && window.opener.loadSponsors) window.opener.loadSponsors();
-}
+      const donorName = data[0].name || "Donor";
+      messageEl.innerText = `Thank you, ${donorName}! Your payment has been confirmed.`;
 
-approveDonation();
+      // Reload sponsor section on main site if open
+      if (window.opener && window.opener.loadSponsors) {
+        window.opener.loadSponsors();
+      }
+
+    } catch (err) {
+      console.error(err);
+      messageEl.innerText = "Unexpected error. Please try again.";
+    }
+  }
+
+  approveDonation();
 </script>
 </body>
 </html>
