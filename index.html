@@ -6,6 +6,7 @@
 <title>Book Donations</title>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
 body{
@@ -15,24 +16,20 @@ body{
   margin:0;
   scroll-behavior:smooth;
 }
-
 header{
   background:#3366cc;
   color:#fff;
   padding:20px;
   text-align:center;
 }
-
 .container{
   max-width:900px;
   margin:auto;
   padding:20px;
 }
-
 button{
   cursor:pointer;
 }
-
 .donate-btn{
   display:block;
   width:260px;
@@ -44,16 +41,13 @@ button{
   border:none;
   border-radius:8px;
 }
-
 .donate-btn:hover{
   background:#2255aa;
 }
-
 .section{
   display:none;
   margin-top:30px;
 }
-
 .methods button{
   margin:5px;
   padding:10px 15px;
@@ -62,7 +56,6 @@ button{
   background:#3366cc;
   color:#fff;
 }
-
 .wallet-box{
   background:#cce0ff;
   padding:20px;
@@ -71,15 +64,12 @@ button{
   text-align:center;
   position:relative;
 }
-
 .wallet-box img{
   width:160px;
 }
-
 .wallet-box p{
   word-break:break-all;
 }
-
 .copy-btn{
   position:absolute;
   top:10px;
@@ -90,11 +80,9 @@ button{
   background:#003366;
   color:white;
 }
-
 .copy-btn.copied{
   background:#2ecc71;
 }
-
 .form-box{
   background:#cce0ff;
   padding:20px;
@@ -104,14 +92,12 @@ button{
   margin-left:auto;
   margin-right:auto;
 }
-
 .form-box input{
   width:100%;
   padding:8px;
   margin-top:5px;
   margin-bottom:15px;
 }
-
 .alert{
   display:none;
   background:#ffcccc;
@@ -120,7 +106,6 @@ button{
   border-radius:6px;
   text-align:center;
 }
-
 .success{
   display:none;
   text-align:center;
@@ -194,6 +179,7 @@ Author of <i>Las Aventuras de Sammy</i>.
 <script>
 emailjs.init("JSsp83NL8OtnW52tk");
 
+// wallets
 const wallets={
   BTC:"bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y",
   USDT:"TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G",
@@ -224,7 +210,22 @@ function copyAddr(addr,btn){
   });
 }
 
-function submitDonation(){
+// elements
+const nameEl=document.getElementById("name");
+const emailEl=document.getElementById("email");
+const amountEl=document.getElementById("amount");
+const txidEl=document.getElementById("txid");
+const alertBox=document.getElementById("alert");
+const success=document.getElementById("success");
+const donorName=document.getElementById("donorName");
+
+// SUPABASE SETUP
+const supabaseUrl = "https://vzovofazxfwboovwaynh.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6b3ZvZmF6eGJvb3dheW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MjkyMjksImV4cCI6MjA4NDEwNTIyOX0.N2uHD5Ee9pA1rSbxuu-P8l_1PK3Zmqc-FLs2f4ddwbs";
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// submit donation
+async function submitDonation(){
   const name=nameEl.value.trim();
   const email=emailEl.value.trim();
   const amount=amountEl.value.trim();
@@ -236,25 +237,21 @@ function submitDonation(){
     return;
   }
 
-  emailjs.send("service_jhvdg4m","template_kkkt4ts",{
-    name, email, amount, txid, method:"Crypto"
-  }).then(()=>{
-    donorName.innerText=name;
-    success.style.display="block";
-  },err=>{
-    alert("Email sending failed. Check console.");
-    console.error(err);
-  });
-}
+  // send email
+  emailjs.send("service_jhvdg4m","template_kkkt4ts",{name,email,amount,txid,method:"Crypto"})
+  .then(()=>{donorName.innerText=name; success.style.display="block";})
+  .catch(err=>{alert("Email sending failed. Check console."); console.error(err);});
 
-const nameEl=document.getElementById("name");
-const emailEl=document.getElementById("email");
-const amountEl=document.getElementById("amount");
-const txidEl=document.getElementById("txid");
-const alertBox=document.getElementById("alert");
-const success=document.getElementById("success");
-const donorName=document.getElementById("donorName");
+  // save in supabase with status "pending"
+  const {data,error} = await supabase
+    .from("donors_sponsor")
+    .insert([{name,email,amount,method:"Crypto",txid,status:"pending"}]);
+  if(error) console.error("Supabase insert error:", error);
+
+  // clear form
+  nameEl.value=""; emailEl.value=""; amountEl.value=""; txidEl.value="";
+}
 </script>
 
 </body>
-  </html>
+</html>
