@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Book Donations</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#e6f0ff;
+  color:#003366;
+  margin:0;
+  scroll-behavior:smooth;
+}
+
+header{
+  background:#3366cc;
+  color:#fff;
+  padding:20px;
+  text-align:center;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+button{
+  cursor:pointer;
+}
+
+.donate-btn{
+  display:block;
+  width:260px;
+  margin:25px auto;
+  padding:15px;
+  background:#003366;
+  color:white;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+}
+
+.donate-btn:hover{
+  background:#2255aa;
+}
+
+.section{
+  display:none;
+  margin-top:30px;
+}
+
+.methods button{
+  margin:5px;
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  background:#3366cc;
+  color:#fff;
+}
+
+.wallet-box{
+  background:#cce0ff;
+  padding:20px;
+  margin-top:20px;
+  border-radius:10px;
+  text-align:center;
+  position:relative;
+}
+
+.wallet-box img{
+  width:160px;
+}
+
+.wallet-box p{
+  word-break:break-all;
+}
+
+.copy-btn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  background:#003366;
+  color:white;
+}
+
+.copy-btn.copied{
+  background:#2ecc71;
+}
+
+.form-box{
+  background:#cce0ff;
+  padding:20px;
+  border-radius:10px;
+  margin-top:20px;
+  max-width:420px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.form-box input{
+  width:100%;
+  padding:8px;
+  margin-top:5px;
+  margin-bottom:15px;
+}
+
+.alert{
+  display:none;
+  background:#ffcccc;
+  color:#990000;
+  padding:10px;
+  border-radius:6px;
+  text-align:center;
+}
+
+.success{
+  display:none;
+  text-align:center;
+  color:green;
+  font-weight:bold;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>The Curious Kids Adventure</h1>
+  <p>A children’s book supporting learning and inclusion</p>
+</header>
+
+<div class="container">
+
+<h2>About the Book</h2>
+<p>
+This book is created to support children with learning challenges.
+Your donation helps printing, illustrations and free copies for schools.
+</p>
+
+<h3>Author</h3>
+<p>
+<b>María Lis Malter Terrada</b> — Argentine children’s book writer.  
+Author of <i>Las Aventuras de Sammy</i>.
+</p>
+
+<button class="donate-btn" id="donateBtn">Donate Now</button>
+
+<div class="section" id="donationSection">
+
+  <div class="methods">
+    <p><b>Select payment method:</b></p>
+    <button onclick="showWallet('BTC')">Bitcoin</button>
+    <button onclick="showWallet('USDT')">USDT</button>
+    <button onclick="showWallet('ETH')">Ethereum</button>
+    <button onclick="showWallet('USDC')">USDC</button>
+  </div>
+
+  <div id="walletArea"></div>
+
+  <div class="form-box">
+    <label>Name</label>
+    <input id="name" placeholder="Your name"/>
+
+    <label>Email</label>
+    <input id="email" placeholder="Your email"/>
+
+    <label>Amount (USD)</label>
+    <input id="amount" type="number"/>
+
+    <label>Transaction ID</label>
+    <input id="txid" placeholder="TXID"/>
+
+    <button class="donate-btn" onclick="submitDonation()">Payment Made</button>
+
+    <div class="alert" id="alert">Please fill all fields before submitting.</div>
+    <div class="success" id="success">
+      Thank you, <span id="donorName"></span>!  
+      Your payment has been submitted and is awaiting confirmation.
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+emailjs.init("JSsp83NL8OtnW52tk");
+
+const wallets={
+  BTC:"bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y",
+  USDT:"TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G",
+  ETH:"0x737F9370AAC907EefC8f7cC45ABb69cAE7273426",
+  USDC:"0x737F9370AAC907EefC8f7cC45ABb69cAE7273426"
+};
+
+document.getElementById("donateBtn").onclick=()=>{
+  document.getElementById("donationSection").style.display="block";
+  document.getElementById("donationSection").scrollIntoView({behavior:"smooth"});
+};
+
+function showWallet(method){
+  const addr=wallets[method];
+  document.getElementById("walletArea").innerHTML=`
+    <div class="wallet-box">
+      <img src="https://chart.googleapis.com/chart?cht=qr&chl=${addr}&chs=200x200">
+      <p>${addr}</p>
+      <button class="copy-btn" onclick="copyAddr('${addr}',this)">Copy</button>
+    </div>`;
+}
+
+function copyAddr(addr,btn){
+  navigator.clipboard.writeText(addr).then(()=>{
+    btn.innerText="Copied ✓";
+    btn.classList.add("copied");
+    setTimeout(()=>{btn.innerText="Copy";btn.classList.remove("copied");},2000);
+  });
+}
+
+function submitDonation(){
+  const name=nameEl.value.trim();
+  const email=emailEl.value.trim();
+  const amount=amountEl.value.trim();
+  const txid=txidEl.value.trim();
+
+  if(!name||!email||!amount||!txid){
+    alertBox.style.display="block";
+    setTimeout(()=>alertBox.style.display="none",3000);
+    return;
+  }
+
+  emailjs.send("service_jhvdg4m","template_kkkt4ts",{
+    name, email, amount, txid, method:"Crypto"
+  }).then(()=>{
+    donorName.innerText=name;
+    success.style.display="block";
+  },err=>{
+    alert("Email sending failed. Check console.");
+    console.error(err);
+  });
+}
+
+const nameEl=document.getElementById("name");
+const emailEl=document.getElementById("email");
+const amountEl=document.getElementById("amount");
+const txidEl=document.getElementById("txid");
+const alertBox=document.getElementById("alert");
+const success=document.getElementById("success");
+const donorName=document.getElementById("donorName");
+</script>
+
+</body>
+  </html>
