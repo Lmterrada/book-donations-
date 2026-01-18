@@ -55,10 +55,10 @@
   <div class="donation-section" id="donation-section">
     <div class="payment-methods">
       <p>Select your payment method:</p>
-      <button data-method="BTC">Bitcoin (BTC)</button>
-      <button data-method="USDT">USDT</button>
-      <button data-method="ETH">Ethereum (ETH)</button>
-      <button data-method="USDC">USDC (ETH)</button>
+      <button onclick="showWallet('BTC')">Bitcoin (BTC)</button>
+      <button onclick="showWallet('USDT')">USDT</button>
+      <button onclick="showWallet('ETH')">Ethereum (ETH)</button>
+      <button onclick="showWallet('USDC')">USDC (ETH)</button>
     </div>
 
     <div class="wallet-container" id="wallet-container"></div>
@@ -76,7 +76,7 @@
       <label for="donor-txid">Transaction ID:</label>
       <input type="text" id="donor-txid" placeholder="Enter your TXID" required>
 
-      <button id="submit-donation">Payment Made</button>
+      <button onclick="submitDonation()">Payment Made</button>
     </div>
 
     <div class="custom-alert" id="custom-alert">Please fill all fields before submitting.</div>
@@ -85,81 +85,70 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  // EmailJS init
-  emailjs.init("JSsp83NL8OtnW52tk"); // Your public key
+emailjs.init("JSsp83NL8OtnW52tk"); // public key
 
-  const wallets = {
-    BTC:{address:'bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y', qr:'https://chart.googleapis.com/chart?cht=qr&chl=bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y&chs=200x200'},
-    USDT:{address:'TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G', qr:'https://chart.googleapis.com/chart?cht=qr&chl=TUYTBFzij5LUtwhgwrgwrmC9MRWrKjLBA9N4G&chs=200x200'},
-    ETH:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'},
-    USDC:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'}
-  };
+const wallets = {
+  BTC:{address:'bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y', qr:'https://chart.googleapis.com/chart?cht=qr&chl=bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y&chs=200x200'},
+  USDT:{address:'TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G', qr:'https://chart.googleapis.com/chart?cht=qr&chl=TUYTBFzij5LUtwhgwrgwrmC9MRWrKjLBA9N4G&chs=200x200'},
+  ETH:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'},
+  USDC:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'}
+};
 
-  // Show donation section
-  const donateBtn = document.getElementById('show-donation');
-  donateBtn.addEventListener('click',()=>{
-    const section = document.getElementById('donation-section');
-    section.style.display='block';
-    section.scrollIntoView({behavior:'smooth'});
-  });
-
-  // Wallet button clicks
-  document.querySelectorAll('.payment-methods button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const method = btn.getAttribute('data-method');
-      const container = document.getElementById('wallet-container');
-      const wallet = wallets[method];
-      container.innerHTML = `
-        <img src="${wallet.qr}" alt="${method} QR">
-        <p>${method} Wallet:<br>${wallet.address}</p>
-        <button class="copy-btn" onclick="copyAddress('${wallet.address}', this)">Copy</button>
-      `;
-    });
-  });
-
-  // Copy function
-  window.copyAddress = function(address, btn){
-    navigator.clipboard.writeText(address).then(()=>{
-      btn.innerText="Copied ✓";
-      btn.classList.add("copied");
-      setTimeout(()=>{ btn.innerText="Copy"; btn.classList.remove("copied"); },2000);
-    });
-  };
-
-  // Submit donation
-  document.getElementById('submit-donation').addEventListener('click', function(){
-    const name = document.getElementById('donor-name').value;
-    const email = document.getElementById('donor-email').value;
-    const amount = document.getElementById('donor-amount').value;
-    const txid = document.getElementById('donor-txid').value;
-    const walletSection = document.getElementById('wallet-container');
-
-    if(!name || !email || !amount || !txid || walletSection.innerHTML===''){
-      const alertBox = document.getElementById('custom-alert');
-      alertBox.style.display='block';
-      setTimeout(()=>{alertBox.style.display='none';},3000);
-      return;
-    }
-
-    // Send email to admin
-    emailjs.send("service_jhvdg4m","template_kkkt4ts",{
-      name:name,
-      amount:amount,
-      method:walletSection.querySelector('p').innerText.split(' Wallet')[0],
-      txid:txid,
-      email:email
-    }).then(()=>{
-      console.log('Email sent');
-      document.getElementById('conf-name').innerText=name;
-      document.getElementById('confirmation').style.display='block';
-      document.getElementById('donor-name').value='';
-      document.getElementById('donor-email').value='';
-      document.getElementById('donor-amount').value='';
-      document.getElementById('donor-txid').value='';
-    },(err)=>{console.error('Email failed', err);});
-  });
+document.getElementById('show-donation').addEventListener('click',()=>{
+  const section = document.getElementById('donation-section');
+  section.style.display='block';
+  section.scrollIntoView({behavior:'smooth'});
 });
+
+function showWallet(method){
+  const container = document.getElementById('wallet-container');
+  const wallet = wallets[method];
+  container.innerHTML = `
+    <img src="${wallet.qr}" alt="${method} QR">
+    <p>${method} Wallet:<br>${wallet.address}</p>
+    <button class="copy-btn" onclick="copyAddress('${wallet.address}', this)">Copy</button>
+  `;
+}
+
+function copyAddress(address, btn){
+  navigator.clipboard.writeText(address).then(()=>{
+    btn.innerText="Copied ✓";
+    btn.classList.add("copied");
+    setTimeout(()=>{ btn.innerText="Copy"; btn.classList.remove("copied"); },2000);
+  });
+}
+
+function submitDonation(){
+  const name = document.getElementById('donor-name').value;
+  const email = document.getElementById('donor-email').value;
+  const amount = document.getElementById('donor-amount').value;
+  const txid = document.getElementById('donor-txid').value;
+  const walletSection = document.getElementById('wallet-container');
+
+  if(!name || !email || !amount || !txid || walletSection.innerHTML===''){
+    const alertBox = document.getElementById('custom-alert');
+    alertBox.style.display='block';
+    setTimeout(()=>{alertBox.style.display='none';},3000);
+    return;
+  }
+
+  // Send email to admin
+  emailjs.send("service_jhvdg4m","template_kkkt4ts",{
+    name:name,
+    amount:amount,
+    method:walletSection.querySelector('p').innerText.split(' Wallet')[0],
+    txid:txid,
+    email:email
+  }).then(()=>{
+    console.log('Email sent');
+    document.getElementById('conf-name').innerText=name;
+    document.getElementById('confirmation').style.display='block';
+    document.getElementById('donor-name').value='';
+    document.getElementById('donor-email').value='';
+    document.getElementById('donor-amount').value='';
+    document.getElementById('donor-txid').value='';
+  },(err)=>{console.error('Email failed', err);});
+}
 </script>
 </body>
-      </html>
+</html> 
