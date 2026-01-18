@@ -14,40 +14,51 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 <script>
+// Supabase setup
 const supabaseUrl = "https://vzovofazxfwboovwaynh.supabase.co";
 const supabaseKey = "sb_publishable_iqHfuWclev_w6l7T1Bnndw_T6N5__YB";
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 async function approveDonation() {
+  const messageEl = document.getElementById('message');
   const urlParams = new URLSearchParams(window.location.search);
   const txid = urlParams.get('id');
-  const messageEl = document.getElementById('message');
 
-  if(!txid){ 
-    messageEl.innerText = "Invalid approval link."; 
-    return; 
+  if(!txid){
+    messageEl.innerText = "Invalid approval link.";
+    return;
   }
 
-  // Update the donor status to 'approved'
-  const {data,error} = await supabase
+  // Update status to 'approved'
+  const { data, error } = await supabase
     .from('donors_sponsor')
-    .update({status:'approved'})
-    .eq('txid',txid)
+    .update({ status: 'approved' })
+    .eq('txid', txid)
     .select();
 
-  if(error || !data.length){ 
-    messageEl.innerText = "Error approving donation."; 
-    console.error(error); 
-    return; 
+  if(error){
+    console.error(error);
+    messageEl.innerText = "Error approving donation. Check console.";
+    return;
   }
 
-  const donorName = data[0].name;
+  if(!data || data.length === 0){
+    messageEl.innerText = "Donation not found or already approved.";
+    return;
+  }
+
+  const donorName = data[0].name || "Donor";
+
+  // Show confirmation message
   messageEl.innerText = `Thank you, ${donorName}! Your payment has been confirmed.`;
 
-  // Optional: refresh sponsor list if main page is open
-  if(window.opener && window.opener.loadSponsors) window.opener.loadSponsors();
+  // Update main page if it has loadSponsors()
+  if(window.opener && window.opener.loadSponsors){
+    window.opener.loadSponsors();
+  }
 }
 
+// Run on page load
 approveDonation();
 </script>
 </body>
