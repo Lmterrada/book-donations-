@@ -29,7 +29,9 @@
 <script>
 const supabaseUrl = "https://vzovofazxfwboovwaynh.supabase.co";
 const supabaseKey = "sb_publishable_iqHfuWclev_w6l7T1Bnndw_T6N5__YB";
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// ✅ CORRECT CLIENT INITIALIZATION
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 async function approveDonation() {
   const messageEl = document.getElementById('message');
@@ -40,7 +42,7 @@ async function approveDonation() {
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('donors_sponsor')
     .update({ status: 'approved' })
     .eq('txid', txid);
@@ -51,8 +53,7 @@ async function approveDonation() {
     return;
   }
 
-  messageEl.innerText =
-    "✅ Donation approved successfully. The donor is now listed as a sponsor.";
+  messageEl.innerText = "✅ Donation approved successfully.";
 }
 
 approveDonation();
