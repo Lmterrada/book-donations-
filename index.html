@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book Donation Page</title>
 <style>
-  body { font-family: Arial, sans-serif; background-color: #e6f0ff; color: #003366; margin:0; padding:0; scroll-behavior:smooth; }
+  body { font-family: Arial; background-color: #e6f0ff; color: #003366; margin:0; padding:0; scroll-behavior:smooth; }
   header { background-color: #3366cc; padding: 20px; text-align: center; color:#fff; }
   header h1{margin:0; font-size:2em;}
   header p{margin:5px 0 0; font-style:italic;}
@@ -25,31 +25,33 @@
   .copy-btn.copied{ background-color:#2ecc71; transform:scale(1.05);}
   .donor-form{ max-width:400px; margin:0 auto; background-color:#cce0ff; padding:20px; border-radius:8px; }
   .donor-form label{ display:block; margin:10px 0 5px; }
-  .donor-form input{ width:100%; padding:8px; border-radius:6px; border:1px solid #003366; }
+  .donor-form input, .donor-form select{ width:100%; padding:8px; border-radius:6px; border:1px solid #003366; }
   .donor-form button{ margin-top:15px; padding:10px; width:100%; border:none; border-radius:6px; background-color:#003366; color:#fff; font-size:1em; cursor:pointer; transition:all 0.3s ease; }
   .donor-form button:hover{ background-color:#2255aa; }
   .confirmation{text-align:center; margin-top:20px; color:green; font-weight:bold; display:none; }
   .custom-alert{ display:none; background-color:#ffcccc; color:#990000; border-left:5px solid #cc0000; padding:10px; margin:10px 0; border-radius:5px; text-align:center;}
+  #donor-list { max-height:300px; overflow-y:auto; margin-top:15px; padding-left:0; }
+  #donor-list li { background-color:#cce0ff; margin:5px 0; padding:8px 12px; border-radius:6px; font-weight:bold; color:#003366; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
 <body>
 <header>
-  <h1>The Curious Kids Adventure</h1>
+  <h1>A Child Who Can Hear Feelings🎧 </h1>
   <p>A story for children with autism and learning challenges</p>
 </header>
 
 <div class="content">
   <section class="book-info">
     <h2>About the Book</h2>
-    <p>This book is designed to bring joy, understanding, and learning to children, especially those with autism and learning challenges. Your support will help fund illustrations and print the first copies for families and schools.</p>
+    <p>This book is designed to help children understand emotions in a concrete way—turning feelings into sounds they can imagine. It’s especially meaningful for kids who experience the world differently, and it encourages empathy, emotional awareness, and kindness.</p>
   </section>
 
-  <section class="author-info">
-    <h3>Author Autograph</h3>
-    <p>María Lis Malter Terrada — Argentine writer and children’s book author. Notable book: <i>Las Aventuras de Sammy</i>.</p>
-  </section>
-
+<section class="author-info">
+  <img src="https://i.postimg.cc/CM8qxFgZ/7220d4c3fc1d73595fd3433f3650a917.jpg" alt="Author Picture" style="width:150px; height:auto; border-radius:8px; display:block; margin:0 auto 10px;">
+  <h3>Author Autograph</h3>
+  <p>María Lis Malter Terrada — Argentine writer and children’s book author. Notable book: <i>Las Aventuras de Sammy</i>.</p>
+</section>
   <a class="donate-button" id="show-donation">Donate Now</a>
 
   <div class="donation-section" id="donation-section">
@@ -70,17 +72,36 @@
       <label for="donor-email">Email:</label>
       <input type="email" id="donor-email" placeholder="Enter your email" required>
 
+      <label for="donor-purpose">Donation Purpose:</label>
+      <select id="donor-purpose" required>
+        <option value="">Select what you’re donating for</option>
+        <option value="Painting">Painting</option>
+        <option value="Illustration">Illustration</option>
+        <option value="Pre-copy">Pre-copy</option>
+        <option value="Printing">Printing</option>
+      </select>
+
       <label for="donor-amount">Amount (USD):</label>
       <input type="number" id="donor-amount" placeholder="Enter donation amount" required>
 
       <label for="donor-txid">Transaction ID:</label>
       <input type="text" id="donor-txid" placeholder="Enter your TXID" required>
 
-      <button onclick="submitDonation()">Payment Made</button>
+      <button id="submit-btn" onclick="submitDonation()" disabled>Payment Made</button>
     </div>
 
     <div class="custom-alert" id="custom-alert">Please fill all fields before submitting.</div>
-    <div class="confirmation" id="confirmation">Thank you, <span id="conf-name"></span>! Your payment has been submitted and is awaiting confirmation.</div>
+
+    <div class="confirmation" id="confirmation" style="display:none;">
+      <p>Thank you, <span id="conf-name"></span>! Your donation has been successfully received. 🎉</p>
+      <p>Your support helps bring stories that inspire and educate children with autism. We truly appreciate your generosity!</p>
+    </div>
+
+    <!-- Donor Wall -->
+    <div class="donor-list-section" style="margin-top:30px;">
+      <h3>Our Supporters</h3>
+      <ul id="donor-list"></ul>
+    </div>
   </div>
 </div>
 
@@ -94,13 +115,15 @@ const wallets = {
   USDC:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'}
 };
 
-document.getElementById('show-donation').addEventListener('click',()=>{
+// Show donation section
+document.getElementById('show-donation').addEventListener('click', () => {
   const section = document.getElementById('donation-section');
-  section.style.display='block';
-  section.scrollIntoView({behavior:'smooth'});
+  section.style.display = 'block';
+  section.scrollIntoView({ behavior: 'smooth' });
 });
 
-function showWallet(method){
+// Show selected wallet
+function showWallet(method) {
   const container = document.getElementById('wallet-container');
   const wallet = wallets[method];
   container.innerHTML = `
@@ -108,47 +131,75 @@ function showWallet(method){
     <p>${method} Wallet:<br>${wallet.address}</p>
     <button class="copy-btn" onclick="copyAddress('${wallet.address}', this)">Copy</button>
   `;
+  document.getElementById('submit-btn').disabled = false; // Enable button immediately
 }
 
-function copyAddress(address, btn){
-  navigator.clipboard.writeText(address).then(()=>{
-    btn.innerText="Copied ✓";
+// Copy wallet address
+function copyAddress(address, btn) {
+  navigator.clipboard.writeText(address).then(() => {
+    btn.innerText = "Copied ✓";
     btn.classList.add("copied");
-    setTimeout(()=>{ btn.innerText="Copy"; btn.classList.remove("copied"); },2000);
+    setTimeout(() => { btn.innerText = "Copy"; btn.classList.remove("copied"); }, 2000);
   });
 }
 
-function submitDonation(){
-  const name = document.getElementById('donor-name').value;
-  const email = document.getElementById('donor-email').value;
-  const amount = document.getElementById('donor-amount').value;
-  const txid = document.getElementById('donor-txid').value;
+// Submit donation
+function submitDonation() {
+  const name = document.getElementById('donor-name').value.trim();
+  const email = document.getElementById('donor-email').value.trim();
+  const amount = document.getElementById('donor-amount').value.trim();
+  const txid = document.getElementById('donor-txid').value.trim();
+  const purpose = document.getElementById('donor-purpose').value.trim();
   const walletSection = document.getElementById('wallet-container');
 
-  if(!name || !email || !amount || !txid || walletSection.innerHTML===''){
+  if(!name || !email || !amount || !txid || !walletSection.innerHTML || !purpose) {
     const alertBox = document.getElementById('custom-alert');
-    alertBox.style.display='block';
-    setTimeout(()=>{alertBox.style.display='none';},3000);
+    alertBox.style.display = 'block';
+    setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
     return;
   }
 
-  // Send email to admin
-  emailjs.send("service_jhvdg4m","template_kkkt4ts",{
-    name:name,
-    amount:amount,
-    method:walletSection.querySelector('p').innerText.split(' Wallet')[0],
-    txid:txid,
-    email:email
-  }).then(()=>{
-    console.log('Email sent');
-    document.getElementById('conf-name').innerText=name;
-    document.getElementById('confirmation').style.display='block';
-    document.getElementById('donor-name').value='';
-    document.getElementById('donor-email').value='';
-    document.getElementById('donor-amount').value='';
-    document.getElementById('donor-txid').value='';
-  },(err)=>{console.error('Email failed', err);});
+  const method = walletSection.querySelector('p').innerText.split(' Wallet')[0];
+
+  // Immediately show confirmation + update donor wall
+  document.getElementById('conf-name').innerText = name;
+  const confirmation = document.getElementById('confirmation');
+  confirmation.style.display = 'block';
+
+  // Add donor to Donor Wall with date and purpose
+  const donorList = document.getElementById('donor-list');
+  const li = document.createElement('li');
+  const now = new Date();
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  const dateStr = now.toLocaleDateString(undefined, options);
+  li.textContent = `${name} — ${dateStr} — ${purpose}`;
+  donorList.appendChild(li);
+  donorList.scrollTop = donorList.scrollHeight; // Auto-scroll to latest donor
+
+  // Clear form
+  document.getElementById('donor-name').value = '';
+  document.getElementById('donor-email').value = '';
+  document.getElementById('donor-amount').value = '';
+  document.getElementById('donor-txid').value = '';
+  document.getElementById('donor-purpose').value = '';
+
+  // Hide confirmation after 5s
+  setTimeout(() => { confirmation.style.display = 'none'; }, 5000);
+
+  // Send email in background (won't block UI)
+  emailjs.send("service_jhvdg4m","template_kkkt4ts", {
+    name: name,
+    amount: amount,
+    method: method,
+    txid: txid,
+    purpose: purpose,
+    email: email
+  }).then(() => {
+    console.log('Email sent successfully');
+  }).catch((err) => {
+    console.error('Email failed', err);
+  });
 }
 </script>
 </body>
-</html> 
+</html>
