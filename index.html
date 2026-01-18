@@ -5,33 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book Donation Page</title>
 <style>
-  body { font-family: Arial; background-color: #e6f0ff; color: #003366; margin:0; padding:0; scroll-behavior:smooth; }
-  header { background-color: #3366cc; padding: 20px; text-align: center; color:#fff; }
-  header h1{margin:0; font-size:2em;}
-  header p{margin:5px 0 0; font-style:italic;}
-  .content { max-width:900px; margin:20px auto; padding:0 20px; }
-  .book-info,.author-info{ margin-bottom:30px; }
-  .book-info h2,.author-info h3{ color:#003366; }
-  .donate-button{ display:block; width:250px; margin:20px auto; padding:15px; background-color:#003366; color:#fff; font-size:1.2em; text-align:center; text-decoration:none; border-radius:8px; cursor:pointer; transition:all 0.3s ease; }
-  .donate-button:hover{ background-color:#2255aa; }
-  .donation-section{ display:none; margin-top:20px; }
-  .payment-methods{text-align:center; margin-bottom:20px;}
-  .payment-methods button{ margin:5px; padding:10px 20px; font-size:1em; cursor:pointer; border-radius:6px; border:none; color:#fff; background-color:#3366cc; transition: all 0.3s ease; }
-  .payment-methods button:hover{ background-color:#2255aa; }
-  .wallet-container{text-align:center; margin-bottom:20px; position:relative; background-color:#cce0ff; padding:20px; border-radius:8px; word-break:break-word;}
-  .wallet-container img{ width:150px; height:150px; margin-bottom:10px;}
-  .wallet-container p{ font-size:0.9em; margin:10px 0;}
-  .copy-btn{ cursor:pointer; padding:6px 12px; background-color:#003366; color:#fff; border:none; border-radius:6px; font-size:0.8em; position:absolute; top:10px; right:10px; transition:all 0.3s ease; }
-  .copy-btn.copied{ background-color:#2ecc71; transform:scale(1.05);}
-  .donor-form{ max-width:400px; margin:0 auto; background-color:#cce0ff; padding:20px; border-radius:8px; }
-  .donor-form label{ display:block; margin:10px 0 5px; }
-  .donor-form input, .donor-form select{ width:100%; padding:8px; border-radius:6px; border:1px solid #003366; }
-  .donor-form button{ margin-top:15px; padding:10px; width:100%; border:none; border-radius:6px; background-color:#003366; color:#fff; font-size:1em; cursor:pointer; transition:all 0.3s ease; }
-  .donor-form button:hover{ background-color:#2255aa; }
-  .confirmation{text-align:center; margin-top:20px; color:green; font-weight:bold; display:none; }
-  .custom-alert{ display:none; background-color:#ffcccc; color:#990000; border-left:5px solid #cc0000; padding:10px; margin:10px 0; border-radius:5px; text-align:center;}
-  #donor-list { max-height:300px; overflow-y:auto; margin-top:15px; padding-left:0; }
-  #donor-list li { background-color:#cce0ff; margin:5px 0; padding:8px 12px; border-radius:6px; font-weight:bold; color:#003366; }
+body { font-family: Arial; background-color: #e6f0ff; color: #003366; margin:0; padding:0; scroll-behavior:smooth; }
+header { background-color: #3366cc; padding: 20px; text-align: center; color:#fff; }
+header h1{margin:0; font-size:2em;}
+header p{margin:5px 0 0; font-style:italic;}
+.content { max-width:900px; margin:20px auto; padding:0 20px; }
+.book-info,.author-info{ margin-bottom:30px; }
+.book-info h2,.author-info h3{ color:#003366; }
+.donate-button{ display:block; width:250px; margin:20px auto; padding:15px; background-color:#003366; color:#fff; font-size:1.2em; text-align:center; text-decoration:none; border-radius:8px; cursor:pointer; transition:all 0.3s ease; }
+.donate-button:hover{ background-color:#2255aa; }
+.donation-section{ display:none; margin-top:20px; }
+.payment-methods{text-align:center; margin-bottom:20px;}
+.payment-methods button{ margin:5px; padding:10px 20px; font-size:1em; cursor:pointer; border-radius:6px; border:none; color:#fff; background-color:#3366cc; transition: all 0.3s ease; }
+.payment-methods button:hover{ background-color:#2255aa; }
+.wallet-container{text-align:center; margin-bottom:20px; position:relative; background-color:#cce0ff; padding:20px; border-radius:8px; word-break:break-word; max-width:350px; margin-left:auto; margin-right:auto;}
+.wallet-container img{ width:150px; height:150px; margin-bottom:10px;}
+.wallet-container p{ font-size:0.9em; margin:10px 0; word-break: break-all;}
+.copy-btn{ cursor:pointer; padding:6px 12px; background-color:#003366; color:#fff; border:none; border-radius:6px; font-size:0.8em; transition:all 0.3s ease; }
+.copy-btn.copied{ background-color:#2ecc71; transform:scale(1.05);}
+.donor-form{ max-width:400px; margin:0 auto; background-color:#cce0ff; padding:20px; border-radius:8px; }
+.donor-form label{ display:block; margin:10px 0 5px; }
+.donor-form input, .donor-form select{ width:100%; padding:8px; border-radius:6px; border:1px solid #003366; }
+.donor-form button{ margin-top:15px; padding:10px; width:100%; border:none; border-radius:6px; background-color:#003366; color:#fff; font-size:1em; cursor:pointer; transition:all 0.3s ease; }
+.donor-form button:hover{ background-color:#2255aa; }
+.confirmation{text-align:center; margin-top:20px; padding:10px; border-radius:6px; background-color:#d4f5d4; color:#006600; font-weight:bold; display:none; }
+.custom-alert{ display:none; background-color:#ffcccc; color:#990000; border-left:5px solid #cc0000; padding:10px; margin:10px 0; border-radius:5px; text-align:center;}
+#donor-list { max-height:300px; overflow-y:auto; margin-top:15px; padding-left:0; }
+#donor-list li { display:flex; justify-content:space-between; align-items:center; background-color:#cce0ff; margin:5px 0; padding:8px 12px; border-radius:6px; font-weight:bold; color:#003366; }
+.purpose-tag { padding:2px 6px; border-radius:4px; font-size:0.85em; color:#fff; margin-left:5px; }
+.Painting{ background-color:#ff66aa; }
+.Illustration{ background-color:#66ccff; }
+.Pre-copy{ background-color:#66ff99; }
+.Printing{ background-color:#ffcc66; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
@@ -42,72 +47,73 @@
 </header>
 
 <div class="content">
-  <section class="book-info">
-    <h2>About the Book</h2>
-    <p>This book is designed to help children understand emotions in a concrete way—turning feelings into sounds they can imagine. It’s especially meaningful for kids who experience the world differently, and it encourages empathy, emotional awareness, and kindness.</p>
-  </section>
+<section class="book-info">
+  <h2>About the Book</h2>
+  <p>This book helps children understand emotions in a concrete way. Especially for kids with autism, encouraging empathy and emotional awareness.</p>
+</section>
 
 <section class="author-info">
   <img src="https://i.postimg.cc/CM8qxFgZ/7220d4c3fc1d73595fd3433f3650a917.jpg" alt="Author Picture" style="width:150px; height:auto; border-radius:8px; display:block; margin:0 auto 10px;">
   <h3>Author Autograph</h3>
   <p>María Lis Malter Terrada — Argentine writer and children’s book author. Notable book: <i>Las Aventuras de Sammy</i>.</p>
 </section>
-  <a class="donate-button" id="show-donation">Donate Now</a>
 
-  <div class="donation-section" id="donation-section">
-    <div class="payment-methods">
-      <p>Select your payment method:</p>
-      <button onclick="showWallet('BTC')">Bitcoin (BTC)</button>
-      <button onclick="showWallet('USDT')">USDT</button>
-      <button onclick="showWallet('ETH')">Ethereum (ETH)</button>
-      <button onclick="showWallet('USDC')">USDC (ETH)</button>
-    </div>
+<a class="donate-button" id="show-donation">Donate Now</a>
 
-    <div class="wallet-container" id="wallet-container"></div>
-
-    <div class="donor-form">
-      <label for="donor-name">Name:</label>
-      <input type="text" id="donor-name" placeholder="Enter your name" required>
-
-      <label for="donor-email">Email:</label>
-      <input type="email" id="donor-email" placeholder="Enter your email" required>
-
-      <label for="donor-purpose">Donation Purpose:</label>
-      <select id="donor-purpose" required>
-        <option value="">Select what you’re donating for</option>
-        <option value="Painting">Painting</option>
-        <option value="Illustration">Illustration</option>
-        <option value="Pre-copy">Pre-copy</option>
-        <option value="Printing">Printing</option>
-      </select>
-
-      <label for="donor-amount">Amount (USD):</label>
-      <input type="number" id="donor-amount" placeholder="Enter donation amount" required>
-
-      <label for="donor-txid">Transaction ID:</label>
-      <input type="text" id="donor-txid" placeholder="Enter your TXID" required>
-
-      <button id="submit-btn" onclick="submitDonation()" disabled>Payment Made</button>
-    </div>
-
-    <div class="custom-alert" id="custom-alert">Please fill all fields before submitting.</div>
-
-    <div class="confirmation" id="confirmation" style="display:none;">
-      <p>Thank you, <span id="conf-name"></span>! Your donation has been successfully received. 🎉</p>
-      <p>Your support helps bring stories that inspire and educate children with autism. We truly appreciate your generosity!</p>
-    </div>
-
-    <!-- Donor Wall -->
-    <div class="donor-list-section" style="margin-top:30px;">
-      <h3>Our Supporters</h3>
-      <ul id="donor-list"></ul>
-    </div>
+<div class="donation-section" id="donation-section">
+  <div class="payment-methods">
+    <p>Select your payment method:</p>
+    <button onclick="showWallet('BTC')">Bitcoin (BTC)</button>
+    <button onclick="showWallet('USDT')">USDT</button>
+    <button onclick="showWallet('ETH')">Ethereum (ETH)</button>
+    <button onclick="showWallet('USDC')">USDC</button>
   </div>
+
+  <div class="wallet-container" id="wallet-container"></div>
+
+  <div class="donor-form">
+    <label for="donor-name">Name:</label>
+    <input type="text" id="donor-name" placeholder="Enter your name" required>
+
+    <label for="donor-email">Email:</label>
+    <input type="email" id="donor-email" placeholder="Enter your email" required>
+
+    <label for="donor-purpose">Donation Purpose:</label>
+    <select id="donor-purpose" required>
+      <option value="">Select what you’re donating for</option>
+      <option value="Painting">Painting</option>
+      <option value="Illustration">Illustration</option>
+      <option value="Pre-copy">Pre-copy</option>
+      <option value="Printing">Printing</option>
+    </select>
+
+    <label for="donor-amount">Amount (USD):</label>
+    <input type="number" id="donor-amount" placeholder="Enter donation amount" required>
+
+    <label for="donor-txid">Transaction ID:</label>
+    <input type="text" id="donor-txid" placeholder="Enter your TXID" required>
+
+    <button id="submit-btn" onclick="submitDonation()" disabled>Payment Made</button>
+  </div>
+
+  <div class="custom-alert" id="custom-alert">Please fill all fields before submitting.</div>
+
+  <div class="confirmation" id="confirmation">
+    <p>Thank you, <span id="conf-name"></span>! Your donation has been successfully received. 🎉</p>
+    <p>Your support helps bring stories that inspire and educate children with autism. We truly appreciate your generosity!</p>
+  </div>
+
+  <div class="donor-list-section" style="margin-top:30px;">
+    <h3>Our Supporters</h3>
+    <ul id="donor-list"></ul>
+  </div>
+</div>
 </div>
 
 <script>
-emailjs.init("JSsp83NL8OtnW52tk"); // public key
+emailjs.init("JSsp83NL8OtnW52tk"); // Your public key
 
+const ADMIN_PASSWORD = "MySecret123"; // Set your secret password
 const wallets = {
   BTC:{address:'bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y', qr:'https://chart.googleapis.com/chart?cht=qr&chl=bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y&chs=200x200'},
   USDT:{address:'TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G', qr:'https://chart.googleapis.com/chart?cht=qr&chl=TUYTBFzij5LUtwhgwrgwrmC9MRWrKjLBA9N4G&chs=200x200'},
@@ -115,14 +121,12 @@ const wallets = {
   USDC:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'}
 };
 
-// Show donation section
 document.getElementById('show-donation').addEventListener('click', () => {
   const section = document.getElementById('donation-section');
   section.style.display = 'block';
   section.scrollIntoView({ behavior: 'smooth' });
 });
 
-// Show selected wallet
 function showWallet(method) {
   const container = document.getElementById('wallet-container');
   const wallet = wallets[method];
@@ -131,10 +135,9 @@ function showWallet(method) {
     <p>${method} Wallet:<br>${wallet.address}</p>
     <button class="copy-btn" onclick="copyAddress('${wallet.address}', this)">Copy</button>
   `;
-  document.getElementById('submit-btn').disabled = false; // Enable button immediately
+  document.getElementById('submit-btn').disabled = false;
 }
 
-// Copy wallet address
 function copyAddress(address, btn) {
   navigator.clipboard.writeText(address).then(() => {
     btn.innerText = "Copied ✓";
@@ -143,7 +146,35 @@ function copyAddress(address, btn) {
   });
 }
 
-// Submit donation
+// DONOR WALL
+function loadDonors() {
+  const list = document.getElementById('donor-list');
+  list.innerHTML = '';
+  const donors = JSON.parse(localStorage.getItem('donors')) || [];
+  donors.forEach((donor, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${donor.name} — ${donor.date} <span class="purpose-tag ${donor.purpose}">${donor.purpose}</span></span>
+      <button class="remove-btn" onclick="removeDonor(${index})">✖</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function removeDonor(index) {
+  const input = prompt("Enter admin password to remove supporter:");
+  if(input === ADMIN_PASSWORD){
+    const donors = JSON.parse(localStorage.getItem('donors')) || [];
+    donors.splice(index,1);
+    localStorage.setItem('donors', JSON.stringify(donors));
+    loadDonors();
+    alert("Supporter removed successfully.");
+  } else {
+    alert("Incorrect password. You are not authorized to remove supporters.");
+  }
+}
+
+// SUBMIT DONATION
 function submitDonation() {
   const name = document.getElementById('donor-name').value.trim();
   const email = document.getElementById('donor-email').value.trim();
@@ -152,54 +183,46 @@ function submitDonation() {
   const purpose = document.getElementById('donor-purpose').value.trim();
   const walletSection = document.getElementById('wallet-container');
 
-  if(!name || !email || !amount || !txid || !walletSection.innerHTML || !purpose) {
+  if(!name || !email || !amount || !txid || !walletSection.innerHTML || !purpose){
     const alertBox = document.getElementById('custom-alert');
     alertBox.style.display = 'block';
-    setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+    setTimeout(()=>{alertBox.style.display='none'},3000);
     return;
   }
 
-  const method = walletSection.querySelector('p').innerText.split(' Wallet')[0];
-
-  // Immediately show confirmation + update donor wall
+  // CONFIRMATION MESSAGE
   document.getElementById('conf-name').innerText = name;
   const confirmation = document.getElementById('confirmation');
   confirmation.style.display = 'block';
+  setTimeout(()=>{confirmation.style.display='none'},5000);
 
-  // Add donor to Donor Wall with date and purpose
-  const donorList = document.getElementById('donor-list');
-  const li = document.createElement('li');
+  // SAVE DONOR
   const now = new Date();
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  const dateStr = now.toLocaleDateString(undefined, options);
-  li.textContent = `${name} — ${dateStr} — ${purpose}`;
-  donorList.appendChild(li);
-  donorList.scrollTop = donorList.scrollHeight; // Auto-scroll to latest donor
+  const dateStr = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  const donor = {name, purpose, date: dateStr};
+  const donors = JSON.parse(localStorage.getItem('donors')) || [];
+  donors.push(donor);
+  localStorage.setItem('donors', JSON.stringify(donors));
+  loadDonors();
 
-  // Clear form
-  document.getElementById('donor-name').value = '';
-  document.getElementById('donor-email').value = '';
-  document.getElementById('donor-amount').value = '';
-  document.getElementById('donor-txid').value = '';
-  document.getElementById('donor-purpose').value = '';
-
-  // Hide confirmation after 5s
-  setTimeout(() => { confirmation.style.display = 'none'; }, 5000);
-
-  // Send email in background (won't block UI)
-  emailjs.send("service_jhvdg4m","template_kkkt4ts", {
-    name: name,
-    amount: amount,
-    method: method,
-    txid: txid,
-    purpose: purpose,
-    email: email
-  }).then(() => {
-    console.log('Email sent successfully');
-  }).catch((err) => {
+  // SEND EMAIL
+  const method = walletSection.querySelector('p').innerText.split(' Wallet')[0];
+  emailjs.send("service_jhvdg4m","template_kkkt4ts",{name, amount, txid, purpose, email, method})
+  .then(()=>{console.log('Email sent successfully');})
+  .catch(err=>{
     console.error('Email failed', err);
+    alert("Email failed! Check EmailJS setup. Error: " + JSON.stringify(err));
   });
+
+  // CLEAR FORM
+  document.getElementById('donor-name').value='';
+  document.getElementById('donor-email').value='';
+  document.getElementById('donor-amount').value='';
+  document.getElementById('donor-txid').value='';
+  document.getElementById('donor-purpose').value='';
 }
+
+loadDonors();
 </script>
 </body>
-  </html>
+</html>
