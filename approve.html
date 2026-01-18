@@ -5,61 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Approve Donation</title>
 <style>
-  body { font-family: Arial; background:#e6f0ff; text-align:center; padding:50px; color:#003366; }
-  .message { background:#cce0ff; display:inline-block; padding:20px; border-radius:8px; font-size:1.2em; }
+  body {
+    font-family: Arial;
+    background:#e6f0ff;
+    text-align:center;
+    padding:50px;
+    color:#003366;
+  }
+  .message {
+    background:#cce0ff;
+    display:inline-block;
+    padding:20px;
+    border-radius:8px;
+    font-size:1.2em;
+  }
 </style>
 </head>
 <body>
+
 <div class="message" id="message">Processing approval...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 <script>
-// Supabase setup
 const supabaseUrl = "https://vzovofazxfwboovwaynh.supabase.co";
 const supabaseKey = "sb_publishable_iqHfuWclev_w6l7T1Bnndw_T6N5__YB";
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 async function approveDonation() {
   const messageEl = document.getElementById('message');
-  const urlParams = new URLSearchParams(window.location.search);
-  const txid = urlParams.get('id');
+  const txid = new URLSearchParams(window.location.search).get('id');
 
-  if(!txid){
+  if (!txid) {
     messageEl.innerText = "Invalid approval link.";
     return;
   }
 
-  // Update status to 'approved'
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('donors_sponsor')
     .update({ status: 'approved' })
-    .eq('txid', txid)
-    .select();
+    .eq('txid', txid);
 
-  if(error){
+  if (error) {
     console.error(error);
-    messageEl.innerText = "Error approving donation. Check console.";
+    messageEl.innerText = "Error approving donation.";
     return;
   }
 
-  if(!data || data.length === 0){
-    messageEl.innerText = "Donation not found or already approved.";
-    return;
-  }
-
-  const donorName = data[0].name || "Donor";
-
-  // Show confirmation message
-  messageEl.innerText = `Thank you, ${donorName}! Your payment has been confirmed.`;
-
-  // Update main page if it has loadSponsors()
-  if(window.opener && window.opener.loadSponsors){
-    window.opener.loadSponsors();
-  }
+  messageEl.innerText =
+    "✅ Donation approved successfully. The donor is now listed as a sponsor.";
 }
 
-// Run on page load
 approveDonation();
 </script>
+
 </body>
 </html>
