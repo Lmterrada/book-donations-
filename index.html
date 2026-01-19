@@ -19,8 +19,7 @@
   .payment-methods button{ margin:5px; padding:10px 20px; font-size:1em; cursor:pointer; border-radius:6px; border:none; color:#fff; background-color:#3366cc; transition: all 0.3s ease; }
   .payment-methods button:hover{ background-color:#2255aa; }
   .wallet-container{text-align:center; margin-bottom:20px; position:relative; background-color:#cce0ff; padding:20px; border-radius:8px; word-break:break-word; max-width:350px; margin-left:auto; margin-right:auto;}
-  .wallet-container img{ width:150px; height:150px; margin-bottom:10px;}
-  .wallet-container p{ font-size:0.9em; margin:10px 0; word-break: break-all;}
+  .wallet-container p{ font-size:1em; margin:10px 0; word-break: break-all;}
   .copy-btn{ cursor:pointer; padding:6px 12px; background-color:#003366; color:#fff; border:none; border-radius:6px; font-size:0.8em; transition:all 0.3s ease; }
   .copy-btn.copied{ background-color:#2ecc71; transform:scale(1.05);}
   .donor-form{ max-width:400px; margin:0 auto; background-color:#cce0ff; padding:20px; border-radius:8px; }
@@ -39,8 +38,6 @@
   .Printing{ background-color:#ffcc66; }
   footer { text-align:center; margin-top:50px; padding:20px; background-color:#3366cc; color:#fff; }
   footer a { color:#fff; text-decoration:underline; }
-
-  /* Quote styling */
   blockquote { font-family:'Georgia', serif; font-size:1.2em; color:#003366; max-width:700px; margin:20px auto; border-left:4px solid #3366cc; padding-left:15px; line-height:1.5; text-align:left; }
   blockquote small { font-family:Arial, sans-serif; font-size:0.9em; display:block; margin-top:5px; color:#003366; }
 </style>
@@ -56,8 +53,6 @@
   <section class="book-info">
     <h2>About the Book</h2>
     <p>This book is designed to help children understand emotions in a concrete way—turning feelings into sounds they can imagine. It’s especially meaningful for kids who experience the world differently, and it encourages empathy, emotional awareness, and kindness.</p>
-
-    <!-- Inspiration Quote -->
     <blockquote>
       “Imagination is more important than knowledge. For knowledge is limited, whereas imagination embraces the entire world.” — Albert Einstein
       <small>As what inspired me to write this book.</small>
@@ -67,8 +62,7 @@
   <section class="author-info">
     <h3>Author Autograph</h3>
     <p>María Lis Malter Terrada — Argentine writer and children’s book author. Notable book: <i>Las Aventuras de Sammy</i>.</p>
-    <img src="https://i.postimg.cc/CM8qxFgZ/7220d4c3fc1d73595fd3433f3650a917.jpg" alt="Author Picture"
-         style="width:160px; height:auto; border-radius:10px; display:block; margin:15px auto 0;">
+    <img src="https://i.postimg.cc/CM8qxFgZ/7220d4c3fc1d73595fd3433f3650a917.jpg" alt="Author Picture" style="width:160px; height:auto; border-radius:10px; display:block; margin:15px auto 0;">
   </section>
 
   <a class="donate-button" id="show-donation">Donate Now</a>
@@ -87,10 +81,8 @@
     <div class="donor-form">
       <label for="donor-name">Full Name:</label>
       <input type="text" id="donor-name" placeholder="Enter your full name" required>
-
       <label for="donor-email">Email:</label>
       <input type="email" id="donor-email" placeholder="Enter your email" required>
-
       <label for="donor-purpose">Donation Purpose:</label>
       <select id="donor-purpose" required>
         <option value="">Select what you’re donating for</option>
@@ -99,13 +91,10 @@
         <option value="Pre-copy">Pre-copy</option>
         <option value="Printing">Printing</option>
       </select>
-
       <label for="donor-amount">Amount (USD):</label>
       <input type="number" id="donor-amount" placeholder="Enter donation amount" required>
-
       <label for="donor-txid">Transaction ID:</label>
       <input type="text" id="donor-txid" placeholder="Enter your TXID" required>
-
       <button id="submit-btn" onclick="submitDonation()" disabled>Payment Made</button>
     </div>
 
@@ -131,33 +120,37 @@
 </footer>
 
 <script>
-emailjs.init("JSsp83NL8OtnW52tk"); // Public Key
+emailjs.init("JSsp83NL8OtnW52tk");
 const ADMIN_PASSWORD = "MySecret123";
 const JSON_BIN_ID = "696d60aeae596e708fe54df7";
 const JSON_MASTER_KEY = "$2a$10$icad1llBzqjwwo7MDLB5Rud1ghIPyPI1roI9.m2rgN3nhhFuWnLBe";
 
+// Wallet addresses only
 const wallets = {
-  BTC:{address:'bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y', qr:'https://chart.googleapis.com/chart?cht=qr&chl=bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y&chs=200x200'},
-  USDT:{address:'TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G', qr:'https://chart.googleapis.com/chart?cht=qr&chl=TUYTBFzij5LUtwhgwrgwrmC9MRWrKjLBA9N4G&chs=200x200'},
-  ETH:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'},
-  USDC:{address:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426', qr:'https://chart.googleapis.com/chart?cht=qr&chl=0x737F9370AAC907EefC8f7cC45ABb69cAE7273426&chs=200x200'}
+  BTC: 'bc1qpc5ahjnmvv62y50upf3nw4xc6k8t24yrjy9w8y',
+  USDT:'TUYTBFzij5LUtwhgwrmC9MRWrKjLBA9N4G',
+  ETH:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426',
+  USDC:'0x737F9370AAC907EefC8f7cC45ABb69cAE7273426'
 };
 
+// Show donation section
 document.getElementById('show-donation').addEventListener('click', ()=>{
   const section=document.getElementById('donation-section');
   section.style.display='block';
   section.scrollIntoView({behavior:'smooth'});
 });
 
+// Show wallet address only
 function showWallet(method){
   const container=document.getElementById('wallet-container');
-  const wallet=wallets[method];
-  container.innerHTML=`<img src="${wallet.qr}" alt="${method} QR">
-  <p>${method} Wallet:<br>${wallet.address}</p>
-  <button class="copy-btn" onclick="copyAddress('${wallet.address}',this)">Copy</button>`;
+  container.innerHTML = `
+    <p>${method} Wallet:<br>${wallets[method]}</p>
+    <button class="copy-btn" onclick="copyAddress('${wallets[method]}',this)">Copy</button>
+  `;
   document.getElementById('submit-btn').disabled=false;
 }
 
+// Copy wallet address
 function copyAddress(address,btn){
   navigator.clipboard.writeText(address).then(()=>{
     btn.innerText="Copied ✓";
@@ -166,9 +159,9 @@ function copyAddress(address,btn){
   });
 }
 
-// ===== GLOBAL DONORS =====
+// Load donors (same as before)
 async function loadDonors(){
-  const list=document.getElementById('donor-list'); 
+  const list=document.getElementById('donor-list');
   list.innerHTML='';
   try{
     const res=await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`,{
@@ -176,63 +169,46 @@ async function loadDonors(){
     });
     const data=await res.json();
     const donors=data.record.donors || [];
-
-    // Pre-added supporters
     const preAdded = [
-      {name:'Agustina Micaela', date:'5 January', purpose:'Painting'},
-      {name:'John Smith', date:'28 December', purpose:'Illustration'},
-      {name:'Maria Gonzalez', date:'2 January', purpose:'Pre-copy'},
-      {name:'Liam Becker', date:'12 January', purpose:'Printing'},
-      {name:'Ana Silva', date:'20 December', purpose:'Painting'}
+      {name:'John Smith', date:'28 Dec 2025', purpose:'Illustration'},
+      {name:'Ana Silva', date:'20 Dec 2025', purpose:'Painting'},
+      {name:'Maria Gonzalez', date:'2 Jan 2026', purpose:'Pre-copy'},
+      {name:'Agustina Micaela', date:'5 Jan 2026', purpose:'Painting'},
+      {name:'Liam Becker', date:'12 Jan 2026', purpose:'Printing'}
     ];
-
     const allDonors = [...preAdded, ...donors];
-
+    allDonors.sort((a,b)=> new Date(a.date) - new Date(b.date));
     allDonors.forEach((donor,index)=>{
       const li=document.createElement('li');
       li.innerHTML=`<span>${donor.name} — ${donor.date} <span class="purpose-tag ${donor.purpose}">${donor.purpose}</span></span>
                       <button class="remove-btn" onclick="removeDonor(${index}, this)">✖</button>`;
       list.appendChild(li);
     });
-
   }catch(err){ console.error("Failed to load donors:",err);}
 }
 
-// REMOVE DONOR WITH FADE
+// Remove donor (same)
 async function removeDonor(index, btn){
   const input = prompt("Enter admin password to remove supporter:");
   if(input !== ADMIN_PASSWORD){ alert("Incorrect password."); return; }
-
   try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`, {
-      headers: { 'X-Master-Key': JSON_MASTER_KEY }
-    });
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`, {headers:{'X-Master-Key':JSON_MASTER_KEY}});
     const data = await res.json();
     let donors = data.record.donors || [];
-
-    // Adjust index because of pre-added donors
-    if(index < 5){ // pre-added donors cannot be removed from JSONBin
-      alert("Cannot remove pre-added supporter.");
-      return;
-    }
-    donors.splice(index - 5, 1);
-
-    await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}`, {
-      method:'PUT',
-      headers:{'Content-Type':'application/json','X-Master-Key':JSON_MASTER_KEY},
-      body: JSON.stringify({ donors })
+    if(index < 5){ alert("Cannot remove pre-added supporter."); return; }
+    donors.splice(index-5,1);
+    await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}`,{
+      method:'PUT', headers:{'Content-Type':'application/json','X-Master-Key':JSON_MASTER_KEY},
+      body: JSON.stringify({donors})
     });
-
-    // Fade out effect
     const li = btn.parentElement;
-    li.style.opacity = '0';
-    setTimeout(()=>{ loadDonors(); }, 500);
-
+    li.style.opacity='0';
+    setTimeout(()=>{loadDonors();},500);
     alert("Supporter removed successfully.");
-  } catch(err){ console.error("Failed to remove donor:",err);}
+  } catch(err){ console.error(err);}
 }
 
-// SUBMIT DONATION
+// Submit donation (same)
 async function submitDonation(){
   const name=document.getElementById('donor-name').value.trim();
   const email=document.getElementById('donor-email').value.trim();
@@ -246,14 +222,10 @@ async function submitDonation(){
     setTimeout(()=>{alertBox.style.display='none'},3000);
     return;
   }
-
-  // Show confirmation
   document.getElementById('conf-name').innerText=name;
   const confirmation=document.getElementById('confirmation');
   confirmation.style.display='block';
   setTimeout(()=>{confirmation.style.display='none'},5000);
-
-  // Add donor to JSONBin
   try{
     const res=await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`,{
       headers:{ 'X-Master-Key': JSON_MASTER_KEY }
@@ -261,7 +233,7 @@ async function submitDonation(){
     const data=await res.json();
     const donors=data.record.donors||[];
     const now=new Date();
-    const dateStr=now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+    const dateStr=now.toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'});
     donors.push({name,purpose,date:dateStr});
     await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}`,{
       method:'PUT',
@@ -269,17 +241,11 @@ async function submitDonation(){
       body: JSON.stringify({donors})
     });
     loadDonors();
-  }catch(err){console.error("Failed to save donor:",err);}
-
-  // Send Email
+  }catch(err){console.error(err);}
   emailjs.send("service_jhvdg4m","template_kkkt4ts",{
     name, amount, txid, purpose, email,
     method: walletSection.querySelector('p').innerText.split(' Wallet')[0]
-  })
-  .then(()=>{console.log("Email sent successfully");})
-  .catch(err=>{console.error("Email failed:",err); alert("Email notification failed. Check your EmailJS setup.");});
-
-  // Clear form
+  }).then(()=>console.log("Email sent")).catch(err=>alert("Email failed"));
   document.getElementById('donor-name').value='';
   document.getElementById('donor-email').value='';
   document.getElementById('donor-amount').value='';
@@ -290,4 +256,4 @@ async function submitDonation(){
 loadDonors();
 </script>
 </body>
-  </html>
+</html> 
