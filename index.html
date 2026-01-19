@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book Donation Page</title>
 <style>
-  body { font-family: Arial, sans-serif; background-color: #e6f0ff; color: #003366; margin:0; padding:0; scroll-behavior:smooth; }
+  body { font-family: Arial; background-color: #e6f0ff; color: #003366; margin:0; padding:0; scroll-behavior:smooth; }
   header { background-color: #3366cc; padding: 20px; text-align: center; color:#fff; }
   header h1{margin:0; font-size:2em;}
   header p{margin:5px 0 0; font-style:italic;}
@@ -31,7 +31,7 @@
   .confirmation{text-align:center; margin-top:20px; padding:10px; border-radius:6px; background-color:#d4f5d4; color:#006600; font-weight:bold; display:none; }
   .custom-alert{ display:none; background-color:#ffcccc; color:#990000; border-left:5px solid #cc0000; padding:10px; margin:10px 0; border-radius:5px; text-align:center;}
   #donor-list { max-height:300px; overflow-y:auto; margin-top:15px; padding-left:0; }
-  #donor-list li { display:flex; justify-content:space-between; align-items:center; background-color:#cce0ff; margin:5px 0; padding:8px 12px; border-radius:6px; font-weight:bold; color:#003366; }
+  #donor-list li { display:flex; justify-content:space-between; align-items:center; background-color:#cce0ff; margin:5px 0; padding:8px 12px; border-radius:6px; font-weight:bold; color:#003366; transition: opacity 0.5s ease; }
   .purpose-tag { padding:2px 6px; border-radius:4px; font-size:0.85em; color:#fff; margin-left:5px; }
   .Painting{ background-color:#ff66aa; }
   .Illustration{ background-color:#66ccff; }
@@ -41,8 +41,8 @@
   footer a { color:#fff; text-decoration:underline; }
 
   /* Quote styling */
-  .quote-block { font-family: 'Georgia', serif; font-size:1.2em; color:#003366; max-width:700px; margin:20px auto; border-left:4px solid #3366cc; padding-left:15px; line-height:1.5; text-align:left; }
-  .quote-block small { font-family: Arial, sans-serif; font-size:0.9em; color:#003366; display:inline-block; margin-left:5px; }
+  blockquote { font-family:'Georgia', serif; font-size:1.2em; color:#003366; max-width:700px; margin:20px auto; border-left:4px solid #3366cc; padding-left:15px; line-height:1.5; text-align:left; }
+  blockquote small { font-family:Arial, sans-serif; font-size:0.9em; display:block; margin-top:5px; color:#003366; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 </head>
@@ -57,8 +57,8 @@
     <h2>About the Book</h2>
     <p>This book is designed to help children understand emotions in a concrete way—turning feelings into sounds they can imagine. It’s especially meaningful for kids who experience the world differently, and it encourages empathy, emotional awareness, and kindness.</p>
 
-    <!-- Quote -->
-    <blockquote class="quote-block">
+    <!-- Inspiration Quote -->
+    <blockquote>
       “Imagination is more important than knowledge. For knowledge is limited, whereas imagination embraces the entire world.” — Albert Einstein
       <small>As what inspired me to write this book.</small>
     </blockquote>
@@ -131,7 +131,7 @@
 </footer>
 
 <script>
-emailjs.init("JSsp83NL8OtnW52tk"); // public key
+emailjs.init("JSsp83NL8OtnW52tk"); // Public Key
 const ADMIN_PASSWORD = "MySecret123";
 const JSON_BIN_ID = "696d60aeae596e708fe54df7";
 const JSON_MASTER_KEY = "$2a$10$icad1llBzqjwwo7MDLB5Rud1ghIPyPI1roI9.m2rgN3nhhFuWnLBe";
@@ -166,43 +166,73 @@ function copyAddress(address,btn){
   });
 }
 
+// ===== GLOBAL DONORS =====
 async function loadDonors(){
-  const list=document.getElementById('donor-list'); list.innerHTML='';
+  const list=document.getElementById('donor-list'); 
+  list.innerHTML='';
   try{
     const res=await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`,{
       headers:{'X-Master-Key':JSON_MASTER_KEY}
     });
     const data=await res.json();
-    const donors=data.record.donors||[];
-    donors.forEach((donor,index)=>{
+    const donors=data.record.donors || [];
+
+    // Pre-added supporters
+    const preAdded = [
+      {name:'Agustina Micaela', date:'5 January', purpose:'Painting'},
+      {name:'John Smith', date:'28 December', purpose:'Illustration'},
+      {name:'Maria Gonzalez', date:'2 January', purpose:'Pre-copy'},
+      {name:'Liam Becker', date:'12 January', purpose:'Printing'},
+      {name:'Ana Silva', date:'20 December', purpose:'Painting'}
+    ];
+
+    const allDonors = [...preAdded, ...donors];
+
+    allDonors.forEach((donor,index)=>{
       const li=document.createElement('li');
       li.innerHTML=`<span>${donor.name} — ${donor.date} <span class="purpose-tag ${donor.purpose}">${donor.purpose}</span></span>
-                      <button class="remove-btn" onclick="removeDonor(${index})">✖</button>`;
+                      <button class="remove-btn" onclick="removeDonor(${index}, this)">✖</button>`;
       list.appendChild(li);
     });
-  }catch(err){console.error("Failed to load donors:",err);}
+
+  }catch(err){ console.error("Failed to load donors:",err);}
 }
 
-async function removeDonor(index){
-  const input=prompt("Enter admin password to remove supporter:");
-  if(input!==ADMIN_PASSWORD){alert("Incorrect password."); return;}
-  try{
-    const res=await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`,{
-      headers:{'X-Master-Key':JSON_MASTER_KEY}
+// REMOVE DONOR WITH FADE
+async function removeDonor(index, btn){
+  const input = prompt("Enter admin password to remove supporter:");
+  if(input !== ADMIN_PASSWORD){ alert("Incorrect password."); return; }
+
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': JSON_MASTER_KEY }
     });
-    const data=await res.json();
-    const donors=data.record.donors||[];
-    donors.splice(index,1);
-    await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}`,{
+    const data = await res.json();
+    let donors = data.record.donors || [];
+
+    // Adjust index because of pre-added donors
+    if(index < 5){ // pre-added donors cannot be removed from JSONBin
+      alert("Cannot remove pre-added supporter.");
+      return;
+    }
+    donors.splice(index - 5, 1);
+
+    await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}`, {
       method:'PUT',
       headers:{'Content-Type':'application/json','X-Master-Key':JSON_MASTER_KEY},
-      body:JSON.stringify({donors})
+      body: JSON.stringify({ donors })
     });
-    loadDonors();
+
+    // Fade out effect
+    const li = btn.parentElement;
+    li.style.opacity = '0';
+    setTimeout(()=>{ loadDonors(); }, 500);
+
     alert("Supporter removed successfully.");
-  }catch(err){console.error("Failed to remove donor:",err);}
+  } catch(err){ console.error("Failed to remove donor:",err);}
 }
 
+// SUBMIT DONATION
 async function submitDonation(){
   const name=document.getElementById('donor-name').value.trim();
   const email=document.getElementById('donor-email').value.trim();
@@ -217,14 +247,16 @@ async function submitDonation(){
     return;
   }
 
+  // Show confirmation
   document.getElementById('conf-name').innerText=name;
   const confirmation=document.getElementById('confirmation');
   confirmation.style.display='block';
   setTimeout(()=>{confirmation.style.display='none'},5000);
 
+  // Add donor to JSONBin
   try{
     const res=await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}/latest`,{
-      headers:{'X-Master-Key':JSON_MASTER_KEY}
+      headers:{ 'X-Master-Key': JSON_MASTER_KEY }
     });
     const data=await res.json();
     const donors=data.record.donors||[];
@@ -233,12 +265,13 @@ async function submitDonation(){
     donors.push({name,purpose,date:dateStr});
     await fetch(`https://api.jsonbin.io/v3/b/${JSON_BIN_ID}`,{
       method:'PUT',
-      headers:{'Content-Type':'application/json','X-Master-Key':JSON_MASTER_KEY},
-      body:JSON.stringify({donors})
+      headers:{ 'Content-Type':'application/json','X-Master-Key': JSON_MASTER_KEY },
+      body: JSON.stringify({donors})
     });
     loadDonors();
   }catch(err){console.error("Failed to save donor:",err);}
 
+  // Send Email
   emailjs.send("service_jhvdg4m","template_kkkt4ts",{
     name, amount, txid, purpose, email,
     method: walletSection.querySelector('p').innerText.split(' Wallet')[0]
@@ -246,6 +279,7 @@ async function submitDonation(){
   .then(()=>{console.log("Email sent successfully");})
   .catch(err=>{console.error("Email failed:",err); alert("Email notification failed. Check your EmailJS setup.");});
 
+  // Clear form
   document.getElementById('donor-name').value='';
   document.getElementById('donor-email').value='';
   document.getElementById('donor-amount').value='';
@@ -254,9 +288,6 @@ async function submitDonation(){
 }
 
 loadDonors();
-
-// Set current year in footer
-document.getElementById('year').innerText = new Date().getFullYear();
 </script>
 </body>
-</html>
+  </html>
